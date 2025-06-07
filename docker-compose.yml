@@ -1,9 +1,28 @@
-version: '3.9'
+version: '3.8'
 
 services:
-  bot:
+  mongo:
+    image: mongo:latest
+    container_name: my_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  nodejs:
     build: .
-    container_name: kamancha_bot
-    env_file:
-      - .env
-    restart: unless-stopped
+    container_name: node_server
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb+srv://tatevzaqaryan:tatev470840@kamancha-bot.herzh5v.mongodb.net/?retryWrites=true&w=majority&appName=kamancha-bot
+    volumes:
+      - ./:/app
+    command: npm start
+
+volumes:
+  mongo-data:
